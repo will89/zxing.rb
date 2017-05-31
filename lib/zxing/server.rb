@@ -6,6 +6,7 @@ if RUBY_PLATFORM == 'java'
   require 'zxing'
   require 'zxing/decoder'
   require 'drb/drb'
+  require 'drb/extserv'
 
   module ZXing
     class Server
@@ -13,6 +14,7 @@ if RUBY_PLATFORM == 'java'
         abort_on_parent_exit!
         DRb.start_service("druby://127.0.0.1:#{port}", ZXing)
         DRb.thread.join
+      rescue NativeException
       end
 
       private
@@ -23,6 +25,7 @@ if RUBY_PLATFORM == 'java'
             sleep 0.5
           }
         end
+      rescue NativeException
       end
     end
   end
