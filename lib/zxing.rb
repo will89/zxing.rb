@@ -1,4 +1,5 @@
 require 'zxing/version'
+require 'zxing/result'
 require 'zxing/decoder'
 
 module ZXing
