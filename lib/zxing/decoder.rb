@@ -36,6 +36,8 @@ module ZXing
         new(file).decode
       rescue NotFoundException, FormatException
         raise UndecodableError
+      rescue ArgumentError => e
+        raise e
       rescue NativeException => e
         $stderr.puts "#{e.class}: #{e.message}"
         $stderr.puts e.backtrace
@@ -43,10 +45,8 @@ module ZXing
       end
 
       def self.decode(file)
-        # $stderr.puts "decoding"
         decode!(file)
       rescue UndecodableError
-        # $stderr.puts "fuckk"
         nil
       end
 
@@ -54,6 +54,8 @@ module ZXing
         new(file).decode_all
       rescue NotFoundException, FormatException
         raise UndecodableError
+      rescue ArgumentError => e
+        raise e
       rescue NativeException => e
         $stderr.puts "#{e.class}: #{e.message}"
         raise e
@@ -190,6 +192,8 @@ module ZXing
         qrcode_reader.decode(bitmap).to_s
       rescue NotFoundException, FormatException
         nil
+      rescue ArgumentError => e
+        raise e
       rescue NativeException => e
         $stderr.puts "#{e.class}: #{e.message}"
         raise e
