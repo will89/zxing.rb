@@ -5,6 +5,7 @@ module ZXing
     require 'zxing/client'
   else
     require 'java'
+    require 'zxing'
     require 'zxing/core-3.3.0.jar'
     require 'zxing/javase-3.3.0.jar'
 
@@ -91,7 +92,7 @@ module ZXing
         hints.put(DecodeHintType::TRY_HARDER, true)
         scan_result = reader.decode(bitmap, hints) || reader.decode(hybrid_bitmap, hints)
         barcode_format = barcode_format_to_sym(scan_result.get_barcode_format)
-        $stderr.puts("Rich class #{barcode_format} #{scan_result.get_text}")
+        ZXing.logger.debug { "[ZXing::Decoder#decode] Input: #{file} Decoded: (#{barcode_format}, #{scan_result.get_text})" }
         Result.new(barcode_format, scan_result.get_text)
       end
 
@@ -105,10 +106,17 @@ module ZXing
         hints.put(DecodeHintType::TRY_HARDER, true)
         multi_barcode_reader = GenericMultipleBarcodeReader.new(reader)
 
-        multi_barcode_reader.decode_multiple(bitmap, hints).map do |result|
-          barcode_format = barcode_format_to_sym(result.get_barcode_format)
-          Result.new(barcode_format, result.get_text)
+        scan_results = multi_barcode_reader.decode_multiple(bitmap, hints).map do |scan_result|
+          barcode_format = barcode_format_to_sym(scan_result.get_barcode_format)
+          Result.new(barcode_format, scan_result.get_text)
         end
+
+        ZXing.logger.debug do
+          decoded_msg = scan_results.map { |scan_result| "(#{scan_result.barcode_format}, #{scan_result.text})" }.join(', ')
+          "[ZXing::Decoder#decode_all] Input: #{file} Decoded: #{decoded_msg}"
+        end
+
+        scan_results
       end
 
       private
