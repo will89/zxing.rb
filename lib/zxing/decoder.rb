@@ -80,21 +80,18 @@ module ZXing
       end
 
       # Enum access? https://stackoverflow.com/questions/33610873/access-enums-from-jar-file-in-jruby
-      # @return https://zxing.github.io/zxing/apidocs/com/google/zxing/Result.html
+      # Other hints to try in the future:
+      # 1) hints.put(DecodeHintType::ASSUME_GS1, true)
+      # Other readers to try in the future:
+      # 1) MultiFormatOneDReader.new(hints)
+      # reader.decode returns https://zxing.github.io/zxing/apidocs/com/google/zxing/Result.html
+      # @return [ZXing::Result]
       def decode
-        # hints = { DecodeHintType.ASSUME_GS1 => Boolean.TRUE }
         hints = HashMap.new
-        # a = DecodeHintType::ASSUME_GS1
-        # hints.put(DecodeHintType::ASSUME_GS1, true)
         hints.put(DecodeHintType::TRY_HARDER, true)
-        # hints.put(DecodeHintType::PURE_BARCODE, false)
-        # hints.put(true, true) # works
-        # r = MultiFormatOneDReader.new(hints)
         scan_result = reader.decode(bitmap, hints) || reader.decode(hybrid_bitmap, hints)
-        $stderr.puts("Rich class #{scan_result.class}")
         barcode_format = barcode_format_to_sym(scan_result.get_barcode_format)
         $stderr.puts("Rich class #{barcode_format} #{scan_result.get_text}")
-        $stderr.puts("#{Result.name}")
         Result.new(barcode_format, scan_result.get_text)
       end
 
@@ -102,6 +99,7 @@ module ZXing
         qr_decode(bitmap) || qr_decode(hybrid_bitmap)
       end
 
+      # @return [Array<ZXing::Result>]
       def decode_all
         hints = HashMap.new
         hints.put(DecodeHintType::TRY_HARDER, true)
