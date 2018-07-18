@@ -35,13 +35,14 @@ module ZXing
 
       def self.decode!(file)
         new(file).decode
-      rescue NotFoundException, FormatException
+      rescue NotFoundException, FormatException => e
+        ZXing.logger.warn { "[ZXing::Decoder#decode!] #{e.class}: #{e.message}\n#{e.backtrace}" }
         raise UndecodableError
       rescue ArgumentError => e
+        ZXing.logger.warn { "[ZXing::Decoder#decode!] #{e.class}: #{e.message}\n#{e.backtrace}" }
         raise e
       rescue NativeException => e
-        $stderr.puts "#{e.class}: #{e.message}"
-        $stderr.puts e.backtrace
+        ZXing.logger.error { "[ZXing::Decoder#decode!] #{e.class}: #{e.message}\n#{e.backtrace}" }
         raise e
       end
 
@@ -53,12 +54,14 @@ module ZXing
 
       def self.decode_all!(file)
         new(file).decode_all
-      rescue NotFoundException, FormatException
+      rescue NotFoundException, FormatException => e
+        ZXing.logger.warn { "[ZXing::Decoder#decode_all!] #{e.class}: #{e.message}\n#{e.backtrace}" }
         raise UndecodableError
       rescue ArgumentError => e
+        ZXing.logger.warn { "[ZXing::Decoder#decode_all!] #{e.class}: #{e.message}\n#{e.backtrace}" }
         raise e
       rescue NativeException => e
-        $stderr.puts "#{e.class}: #{e.message}"
+        ZXing.logger.error { "[ZXing::Decoder#decode_all!] #{e.class}: #{e.message}\n#{e.backtrace}" }
         raise e
       end
 
@@ -196,12 +199,14 @@ module ZXing
 
       def qr_decode(bitmap)
         qrcode_reader.decode(bitmap).to_s
-      rescue NotFoundException, FormatException
+      rescue NotFoundException, FormatException => e
+        ZXing.logger.warn { "[ZXing::Decoder#qr_decode] #{e.class}: #{e.message}\n#{e.backtrace}" }
         nil
       rescue ArgumentError => e
+        ZXing.logger.warn { "[ZXing::Decoder#qr_decode] #{e.class}: #{e.message}\n#{e.backtrace}" }
         raise e
       rescue NativeException => e
-        $stderr.puts "#{e.class}: #{e.message}"
+        ZXing.logger.error { "[ZXing::Decoder#qr_decode] #{e.class}: #{e.message}\n#{e.backtrace}" }
         raise e
       end
 
