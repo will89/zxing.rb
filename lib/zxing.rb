@@ -1,7 +1,17 @@
 require 'zxing/version'
+require 'zxing/result'
 require 'zxing/decoder'
+require 'logger'
 
 module ZXing
+  class << self
+    attr_writer :logger
+
+    def logger
+      @logger ||= Logger.new($stderr).tap { |l| l.progname = self.name }
+    end
+  end
+
   class UndecodableError < StandardError
     def message; "Image not decodable"; end
   end
